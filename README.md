@@ -20,14 +20,14 @@ This function converts dates from MM-DD-YYYY to YYY-MM-DD
 ***Usage:*** <br/>
 It is strongly recommended to use the Jupyter Notebook. <br/>
 *Daily:* <br/>
-```
+```python
 # Full download of Jira data for today's date:
 effectivedate = date.today() - timedelta(days=1)
 effectivedate = effectivedate.strftime('%Y-%m-%d')
 dailytickets, comments, changelog, SLA = Jira.fJiraExport(effectivedate=effectivedate)
 ```
 Add if you're using the SQL Server Upload functionality.
-```
+```python
 # Full download of Jira data for today's date:
 effectivedate = date.today() - timedelta(days=1)
 effectivedate = effectivedate.strftime('%Y-%m-%d')
@@ -36,7 +36,7 @@ dailytickets, comments, changelog, SLA = Jira.fJiraExport(effectivedate=effectiv
 
 *SQL Guided (best for non-daily use):*<br/>
 please note this method has the upload process built in already and may need to be removed if not needed.<br/>
-```
+```python
 sql = """SELECT dateadd(dd,1,max(cast(Updated as date))) as STARTDATE, cast(getdate()-1 as date) as ENDDATE FROM IceAutomation_AZR.jira.TicketTable"""
 effdates = dbcc.SQL_Call_pandas(sql=sql)
 sd = str(effdates.loc[0, 'STARTDATE'])
@@ -50,7 +50,7 @@ for i in date_list:
 ```
 
 *Date Range Pull: (best for non-daily use or bulk loading historical data.* <br/>
-```
+```python
 date_list = pd.date_range(start='2025-12-12', end='2025-12-14')
 for i in date_list:
     effectivedate = i.strftime('%Y-%m-%d')

@@ -178,13 +178,11 @@ def get_issues_by_effective_date(project_keys, effective_date, jql_extra=""):
     return issues_to_dataframe(issues)
 
 # Daily Tickets Function
-def fDailyTickets(effectivedate=None):
+def fDailyTickets(effectivedate=None, projectkey=None):
     # Gets Ticket Updates by Date
-    production = get_issues_by_effective_date(['ICEDESK'], effective_date=effectivedate);sleep(1)
-    enhancements = get_issues_by_effective_date(['ENH'], effective_date=effectivedate);sleep(1)
-    dailytickets = pd.concat([production, enhancements])
-    dailytickets.fillna('', inplace=True)
-    return dailytickets
+    production = get_issues_by_effective_date([{projectkey}], effective_date=effectivedate);sleep(1)
+    production.fillna('', inplace=True)
+    return production
 
 # Function: Get coversation history
 def get_issue_conversation_history(issue_key):
@@ -293,7 +291,7 @@ def fTicketInfo(dataframe=None):
 
 # Runs all extract functions by effective date
 def fJiraExport(effectivedate=None):
-    dailytickets = fDailyTickets(effectivedate=effectivedate);print('Fetched Daily Tickets')
+    dailytickets = fDailyTickets(effectivedate=effectivedate, projectkey='YOURPROJECTKEY');print('Fetched Daily Tickets')
     comments, changelog, SLA = fTicketInfo(dataframe=dailytickets);print('Fetched Ticket Info')
     return dailytickets, comments, changelog, SLA
 
@@ -318,7 +316,7 @@ def fUploadJiraDataToDB_Tickets(dailytickets=None):
         '{row["Components"].replace("'", "''")}'
         """
         # print(sql)
-        dbcc.SQL_Call_pyodbc(sql=sql,server='Ice-AZRAXSQL01', database='IceAutomation_AZR')
+        dbcc.SQL_Call_pyodbc(sql=sql)
     print(f'Uploaded {len(dailytickets)} tickets')
 
 # Uploads the Ticket data to the JIRA.TicketComments_STG:
@@ -336,7 +334,7 @@ def fUploadJiraDataToDB_Comments(comments=None):
         '{row["BodyText"].replace("'", "''")}'
         """
         # print(sql)
-        dbcc.SQL_Call_pyodbc(sql=sql,server='Ice-AZRAXSQL01', database='IceAutomation_AZR')
+        dbcc.SQL_Call_pyodbc(sql=sql)
     print(f'Uploaded {len(comments)} comments')
 
 # Uploads the Ticket data to the JIRA.TicketChangeLog_STG:
@@ -354,13 +352,13 @@ def fUploadJiraDataToDB_ChangeLog(changelog=None):
         '{row["FieldType"].replace("'", "''")}'
         """
         # print(sql)
-        dbcc.SQL_Call_pyodbc(sql=sql,server='Ice-AZRAXSQL01', database='IceAutomation_AZR')
+        dbcc.SQL_Call_pyodbc(sql=sql)
     print(f'Uploaded {len(changelog)} changelog entries')
 
 # Runs Stored Procedures on Server
 def fRunStoredProcedures():
     sql = "EXEC JIRA.spUPDATEDATATABLES"
-    dbcc.SQL_Call_pyodbc(sql=sql,server='Ice-AZRAXSQL01', database='IceAutomation_AZR')
+    dbcc.SQL_Call_pyodbc(sql=sql)
     print('Executed Stored Procedures')
 
 # Full run with upload:
@@ -414,11 +412,6 @@ def flatten_sla_cycle(issue_key, sla_name, cycle, cycle_type):
 # Function: Get issue SLA flat
 def get_issue_sla_flat(issue_key):
     # Pulls full SLA history for a single Jira issue (completed + ongoing cycles). Returns a flat pandas DataFrame.
-
-    import requests
-    from requests.auth import HTTPBasicAuth
-    import pandas as pd
-
     # Secure environment loader
     # email, api_token, base_url = fGetENV()
     email, api_token, base_url = DatabaseConfigReporting().get_config()
@@ -478,7 +471,7 @@ def fUploadJiraDataToDB_SLA(sla=None):
         '{row["elapsed_hours"]}',
         '{row["remaining_hours"]}'
         """
-        dbcc.SQL_Call_pyodbc(sql=sql,server='Ice-AZRAXSQL01', database='IceAutomation_AZR')
+        dbcc.SQL_Call_pyodbc(sql=sql)
     print(f'Uploaded {len(sla)} SLA records')
 
 
