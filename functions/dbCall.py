@@ -9,7 +9,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class DatabaseConfigReporting:
-    def __init__(self, env_file=r'dbcreds_Reporting.env'):
+    def __init__(self, env_file=r'dbcreds.env'):
         # Load environment variables from the specified .env file
         if env_file:
             load_dotenv(env_file, override=True)  # override ensures fresh reload

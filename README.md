@@ -94,7 +94,7 @@ ___
 **fSQLGuidedPull()**
 This is the full process run used as the main driver when using a packager and scheduling the executable on a scheduler.
 
-If you chose to utilize the SQL Server upload functionality you will need and enc file with the following. 
+If you chose to utilize the SQL Server upload functionality you will need and env file with the following. 
 1. eSERVER
 2. eSCHEMA
 3. eDATABASE
